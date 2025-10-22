@@ -49,7 +49,7 @@ func (g *Game) Init(){
 	g.particles = append(g.particles, particle)
 }
 
-func preventWallCollision(p *Particle) {
+func wallCollision(p *Particle) {
 	if p.posX - p.rad < 0 || p.posX + p.rad > sWidth {
 		p.vel.dirX = -p.vel.dirX
 	}
@@ -64,13 +64,13 @@ func (g *Game) Update() error {
 		p := &g.particles[i]
 		p.posX += p.vel.dirX
 		p.posY += p.vel.dirY
-		preventWallCollision(p)
+		wallCollision(p)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyB) {
 		randRad := rand.Float64() * 50
-		randPosX := rand.Float64() * sWidth - randRad
-		randPosY := rand.Float64() * sHeight - randRad
+		randPosX := 1 + rand.Float64() * sWidth - randRad
+		randPosY := 1 + rand.Float64() * sHeight - randRad
 		randVel := Velocity{
 			dirX: -10 + rand.Float64() * 20,
 			dirY: -10 + rand.Float64() * 20,
