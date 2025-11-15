@@ -45,7 +45,12 @@ func makeParticle(posX float64, posY float64, vel Velocity, rad float64, color c
 }
 
 func (g *Game) Init(){
-	particle := makeParticle(sWidth/2, sHeight/2, Velocity{rand.Float64() * 10, rand.Float64() * 10}, 20, color.RGBA{255, 0, 0, 255})
+	particle := makeParticle(sWidth/2,
+							sHeight/2,
+							Velocity{rand.Float64() * 10, rand.Float64() * 10},
+							20,
+							color.RGBA{255, 0, 0, 255},
+						)
 	g.particles = append(g.particles, particle)
 }
 
@@ -58,6 +63,21 @@ func wallCollision(p *Particle) {
 	}
 }
 
+func particleCollision(i int, particles *[]Particle){
+	for j := range *particles {
+		if i != j {
+			dx := (*particles)[i].posX - (*particles)[j].posX
+			dy := (*particles)[i].posY - (*particles)[j].posY
+			distance := dx*dx + dy*dy
+			radiusSum := (*particles)[i].rad + (*particles)[j].rad
+			if distance < radiusSum*radiusSum {
+				(*particles)[i].vel.dirX = -(*particles)[i].vel.dirX
+				(*particles)[i].vel.dirY = -(*particles)[i].vel.dirY
+			}
+		}
+	}
+}
+
 func (g *Game) Update() error {
 
 	for i := range g.particles {
@@ -65,10 +85,12 @@ func (g *Game) Update() error {
 		p.posX += p.vel.dirX
 		p.posY += p.vel.dirY
 		wallCollision(p)
+		particleCollision(i, &g.particles)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyB) {
-		randRad := rand.Float64() * 50
+		//randRad := rand.Float64() * 50
+		randRad := float64(20);
 		randPosX := 1 + rand.Float64() * sWidth - randRad
 		randPosY := 1 + rand.Float64() * sHeight - randRad
 		randVel := Velocity{
